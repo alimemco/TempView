@@ -97,7 +97,7 @@ public class TempView extends View {
     public void setCurrentValue(float value) {
 
         value = validateValue(value);
-       // value = rotateValue(value);
+        value = rotateValue(value);
 
         this.mFloatValue = value;
 
@@ -267,6 +267,11 @@ public class TempView extends View {
         float left = (mIntegerMaxValue - mIntegerMinValue);
         return left % 2 == 0 ? left : left + 1;
     }
+    private float getLeftValue() {
+        return  (mIntegerMaxValue - mIntegerMinValue);
+    }
+
+
 
     private float getSweepProgressArc() {
 
@@ -274,6 +279,7 @@ public class TempView extends View {
 
         if (mDegreeValue == DEFAULT_START_DEGREE)
             sweep = 1;
+
 
         return sweep;
     }
@@ -294,20 +300,26 @@ public class TempView extends View {
 
     private float rotateValue(float value) {
 
-        float _25 = getHandCount() / 4;
-        float _75 = _25 * 3;
+        Log.i(TAG, "value: "+value);
+        Log.i(TAG, "mIntegerMinValue: "+mIntegerMinValue);
+        Log.i(TAG, "getHandCount(): "+getHandCount());
+        Log.i(TAG, "mIntegerMaxValue: "+mIntegerMaxValue);
+        Log.i(TAG, "mIntegerMinValue: "+mIntegerMinValue);
+
+        float _25 = getLeftValue() / 4;
+        float _12_5 = getLeftValue() / 6;
 
         if (value <= _25)
-            value = value + _75;
+            value = value - _12_5 ;
 
         else
-            value = value - _25;
+            value = value - _12_5 ;
 
-        return value;
+        return value ;
     }
 
     private float get25Percentage(float value) {
-        return getHandCount() / 4;
+        return value / 4;
     }
 
     private float get75Percentage(float value) {
@@ -470,6 +482,25 @@ public class TempView extends View {
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
 
+
+        float val  ;
+
+        if (mIntegerMinValue % 2 == 0 && mIntegerMaxValue % 2 == 0 ||
+                mIntegerMinValue % 2 != 0 && mIntegerMaxValue % 2 != 0
+        ){
+            val = mDegreeValue - 45;
+        }else {
+            val = mDegreeValue  -  (45f / 2);
+        }
+        Log.i(TAG, "onDraw: "+mDegreeValue);
+        Log.i(TAG, "mIntegerMinValue: "+mIntegerMinValue);
+        Log.i(TAG, "mIntegerMaxValue: "+mIntegerMaxValue);
+        Log.i(TAG, "val: "+val);
+
+       // mDegreeValue = val ;
+
+
+
         float mFloatCenterXCircle = getDrawXOnBackgroundProgress(mDegreeValue, mRadiusBackgroundProgress, mWidthBackgroundProgress);
         float mFloatCenterYCircle = getDrawYOnBackgroundProgress(mDegreeValue, mRadiusBackgroundProgress, mHeightBackgroundProgress);
         //ADD CIRCLE AREA FOR DETECT TOUCH
@@ -480,7 +511,7 @@ public class TempView extends View {
         canvas.drawArc(mRectBackground, DEFAULT_START_DEGREE, DEFAULT_END_DEGREE, false, mPaintBackgroundProgress);
 
 
-        float sweep = getSweepProgressArc() ;
+        float sweep = getSweepProgressArc();
         //PROGRESS TIME
         canvas.drawArc(mRectProgress, DEFAULT_START_DEGREE, sweep, false, mPaintTimeProgress);
 
@@ -547,7 +578,7 @@ public class TempView extends View {
         int x = (int) event.getX();
         int y = (int) event.getY();
 
-        double angel = 0 ;
+        double angel = 0;
 
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
@@ -559,9 +590,6 @@ public class TempView extends View {
 
                 if (found) {
                     accessMoving = true;
-                    angel = getAngleFromPoint((double) mWidthBackgroundProgress / 2, (double) mHeightBackgroundProgress / 2, (double) x, (double) y) - 90;
-
-                    Log.i(TAG, "ACTION_DOWN: angel "+angel);
                     break;
                 } else {
                     accessMoving = false;
@@ -574,19 +602,12 @@ public class TempView extends View {
                 if (accessMoving) {
 
                     angel = getAngleFromPoint((double) mWidthBackgroundProgress / 2, (double) mHeightBackgroundProgress / 2, (double) x, (double) y) - 90;
-                    if (angel < DEFAULT_END_DEGREE - 45 && angel + 45  > 0 ){
-
-                       // mFloatValue = rollbackValueFromAngel(angel);
+                    if (angel < DEFAULT_END_DEGREE - 45 && angel + 45 > 0) {
 
                         mDegreeValue = (float) angel;
 
                         if (onSeekCirclesListener != null)
-                            onSeekCirclesListener.onSeekChange(Math.round(getValueFromAngel(angel)));
-
-                        Log.i(TAG, "angel: "+angel);
-                        Log.i(TAG, "getValueFromAngel: "+getValueFromAngel(angel));
-                        Log.i(TAG, "zarb: "+(getValueFromAngel(angel) * 1.35 ));
-
+                            onSeekCirclesListener.onSeekChange(Math.round(getValueFromAngel(mDegreeValue)));
 
                         invalidate();
                     }
@@ -595,15 +616,8 @@ public class TempView extends View {
                 break;
             case MotionEvent.ACTION_UP:
 
-               /*
-
-                   // angel = getAngleFromPoint((double) mWidthBackgroundProgress / 2, (double) mHeightBackgroundProgress / 2, (double) x, (double) y) - 90;
-                    mFloatValue = getValueFromAngel(angel);
-
-                    if (onSeekCirclesListener != null)
-                        onSeekCirclesListener.onSeekComplete(getValueFromAngel(angel));
-*/
-
+                if (onSeekCirclesListener != null)
+                    onSeekCirclesListener.onSeekComplete(Math.round(getValueFromAngel(mDegreeValue)));
 
 
                 accessMoving = false;
@@ -663,7 +677,7 @@ public class TempView extends View {
     public interface OnSeekChangeListener {
         void onSeekChange(int value);
 
-        void onSeekComplete(float value);
+        void onSeekComplete(int value);
     }
 
 }

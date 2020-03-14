@@ -17,17 +17,17 @@ public class MainActivity extends AppCompatActivity {
         TempView tempView = findViewById(R.id.tempView);
         TextView textView = findViewById(R.id.statusTemp);
 
-        // tempView.setCurrentValue(0);
+         //tempView.setCurrentValue(6);
 
         tempView.setOnSeekCirclesListener(new TempView.OnSeekChangeListener() {
             @Override
             public void onSeekChange(int value) {
-                textView.setText(String.valueOf(value));
+                textView.setText(String.format("onSeekChange : value = %s",value));
             }
 
             @Override
-            public void onSeekComplete(float value) {
-                textView.setText("complete "+value);
+            public void onSeekComplete(int value) {
+                textView.setText(String.format("onSeekComplete : value = %s",value));
             }
         });
 

@@ -32,11 +32,11 @@
         app:layout_constraintEnd_toStartOf="@id/btn"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:tv_current_value="2"
+        app:tv_current_value="1"
         app:tv_is_indicator="false"
         app:tv_color_background_progress="#008577"
-        app:tv_max_value="14"
-        app:tv_min_value="-10" />
+        app:tv_max_value="7"
+        app:tv_min_value="0" />
 
     <TextView
         android:id="@+id/statusTemp"
