@@ -167,7 +167,9 @@ public class TempView extends View {
 
         } else {
 
-            if (Math.round(value) > -9) {
+            if (Math.round(value) == 0){
+                mStringTextCenter = String.format("0%s C°", Math.round(value));
+            }else if (Math.round(value) > -9) {
                 mStringTextCenter = String.format("%s C°", String.valueOf(Math.round(value)).replace("-", "-0"));
             } else {
                 mStringTextCenter = String.format("%s C°", Math.round(value));
@@ -551,8 +553,13 @@ public class TempView extends View {
 
 
         //TEXT
-        canvas.drawText(mStringTextCenter, mWidthBackgroundProgress / 2, (float) (mHeightBackgroundProgress / 2) + DEFAULT_SPACE_TEXT, mPaintCenterText);
-        canvas.drawText(mStringTextStatus, mWidthBackgroundProgress / 2, (float) (mHeightBackgroundProgress / 2) - DEFAULT_SPACE_TEXT, mPaintTopText);
+
+       if (isIndicator){
+           canvas.drawText(mStringTextStatus, mWidthBackgroundProgress / 2, (float) (mHeightBackgroundProgress / 2) - DEFAULT_SPACE_TEXT, mPaintTopText);
+           canvas.drawText(mStringTextCenter, mWidthBackgroundProgress / 2, (float) (mHeightBackgroundProgress / 2) + DEFAULT_SPACE_TEXT, mPaintCenterText);
+       }else {
+           canvas.drawText(mStringTextCenter, (float)mWidthBackgroundProgress / 2  , (float) mHeightBackgroundProgress / 2  + mPaintBackgroundProgress.getStrokeWidth() / 2, mPaintCenterText);
+       }
 
 
         //CIRCLE VALUE
@@ -562,12 +569,13 @@ public class TempView extends View {
 
         {
             //LINES
-            float angel = DEFAULT_START_DEGREE;
+            float angel = DEFAULT_START_DEGREE - 22.5f;
             float x1, y1, x2, y2;
+            //todo fix bug start from 2 !
 
-            for (int i = 0; i < getLeftValue()-1 ; i++) {
+            for (int i = -1; i < getLeftValue() ; i++) {
 
-                angel += getDegreePerHand();
+                angel += getDegreePerHand() ;
 
                 if (i % 2 != 0) {
                     x1 = (float) (Math.cos(Math.toRadians(angel))) * (mFloatBeginOfClockLines - 0) + (float) (mWidthBackgroundProgress / 2);
