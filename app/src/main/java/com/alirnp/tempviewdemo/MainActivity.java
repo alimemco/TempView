@@ -21,7 +21,7 @@ public class MainActivity extends AppCompatActivity {
 
         tempView.setOnSeekCirclesListener(new TempView.OnSeekChangeListener() {
             @Override
-            public void onSeekChange(float value) {
+            public void onSeekChange(int value) {
                 textView.setText(String.valueOf(value));
             }
 
