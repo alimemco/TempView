@@ -307,7 +307,7 @@ public class TempView extends View {
     }
 
     private float getDegreePerHand() {
-        return (360 - 90) / (float) getHandCount();
+        return DEFAULT_END_DEGREE / (float) getLeftValue();
     }
 
     private float getHandCount() {
@@ -562,14 +562,12 @@ public class TempView extends View {
 
         {
             //LINES
-            float angel = 270;
+            float angel = DEFAULT_START_DEGREE;
             float x1, y1, x2, y2;
 
-            float degreePerHand = getDegreePerHand();
+            for (int i = 0; i < getLeftValue() ; i++) {
 
-            for (int i = 0; i <= getLeftValue(); i++) {
-
-                angel += degreePerHand;
+                angel += getDegreePerHand();
 
                 if (i % 2 != 0) {
                     x1 = (float) (Math.cos(Math.toRadians(angel))) * (mFloatBeginOfClockLines - 0) + (float) (mWidthBackgroundProgress / 2);
