@@ -565,7 +565,7 @@ public class TempView extends View {
             float angel = DEFAULT_START_DEGREE;
             float x1, y1, x2, y2;
 
-            for (int i = 0; i < getLeftValue() ; i++) {
+            for (int i = 0; i < getLeftValue()-1 ; i++) {
 
                 angel += getDegreePerHand();
 
