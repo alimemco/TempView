@@ -6,11 +6,10 @@
         <attr name="tv_text_status" format="string" />
         <attr name="tv_color_background_progress" format="color" />
         <attr name="tv_color_progress" format="color" />
-        <attr name="tv_color_start_time_stroke" format="color" />
-        <attr name="tv_color_end_time_stroke" format="color" />
+        <attr name="tv_color_value" format="color" />
         <attr name="tv_color_text_time" format="color" />
         <attr name="tv_stroke_width_background_progress" format="dimension" />
-        <attr name="tv_stroke_width_circles" format="dimension" />
+        <attr name="tv_stroke_width_circle" format="dimension" />
         <attr name="tv_is_indicator" format="boolean" />
         <attr name="tv_current_value" format="float" />
         <attr name="tv_min_value" format="float" />

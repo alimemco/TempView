@@ -10,7 +10,6 @@ import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.Typeface;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 
@@ -23,7 +22,7 @@ public class TempView extends View {
     private final static int DEFAULT_BACKGROUND_PROGRESS_COLOR = Color.parseColor("#F5F5F5");
     private final static float DEFAULT_BACKGROUND_PROGRESS_RADIUS = dpToPx(120);
     private final static float DEFAULT_BACKGROUND_PROGRESS_STROKE_WIDTH = dpToPx(20);
-    private final static float DEFAULT_CIRCLE_STROKE_WIDTH = 5;
+    private final static float DEFAULT_CIRCLE_STROKE_WIDTH = dpToPx(3);
     private final static int DEFAULT_PROGRESS_COLOR = Color.parseColor("#1a8dff");
     private final static int DEFAULT_START_TIME_STROKE_COLOR = Color.parseColor("#00E676");
     private final static int DEFAULT_CLOCK_COLOR = Color.parseColor("#CFD8DC");
@@ -32,8 +31,14 @@ public class TempView extends View {
     private final static float DEFAULT_MIN_VALUE = -10;
     private final static float DEFAULT_MAX_VALUE = 14;
 
+
     private final static float DEFAULT_START_DEGREE = 315;
     private final static float DEFAULT_END_DEGREE = 270;
+
+    /*
+    private final static float DEFAULT_START_DEGREE = -90 ;
+    private final static float DEFAULT_END_DEGREE = 270 ;
+*/
     private Context context;
     private float mDegreeValue;
     private float mRadiusBackgroundProgress;
@@ -51,8 +56,8 @@ public class TempView extends View {
     private Paint mPaintTimeProgress;
     private Paint mPaintHandClock;
     private Paint mPaintHandClockColored;
-    private Paint mPaintTextTime;
-    private Paint mPaintTextReaming;
+    private Paint mPaintCenterText;
+    private Paint mPaintTopText;
     private RectF mRectBackground;
     private RectF mRectProgress;
     private RectF mRectClock;
@@ -72,7 +77,6 @@ public class TempView extends View {
 
     public TempView(Context context) {
         super(context);
-
         this.context = context;
     }
 
@@ -124,24 +128,22 @@ public class TempView extends View {
         Rect bounds = new Rect();
         paint.getTextBounds(text, 0, text.length(), bounds);
 
-        float desiredTextSize = testTextSize * desiredWidth / bounds.width();
-        DEFAULT_SPACE_TEXT = desiredTextSize;
+        DEFAULT_SPACE_TEXT = (testTextSize * desiredWidth / bounds.width()) /1.2f;
 
-        paint.setTextSize(desiredTextSize);
+        paint.setTextSize(DEFAULT_SPACE_TEXT);
     }
 
-    private static void setTextSizeForWidthSingleText(Paint paint, float desiredWidth, String text) {
+    private void setTextSizeForWidthSingleText(Paint paint, float desiredWidth, String text) {
 
-        final float testTextSize = 48f;
+        final float testTextSize = dpToPx(48f);
 
         paint.setTextSize(testTextSize);
         Rect bounds = new Rect();
         paint.getTextBounds(text, 0, text.length(), bounds);
 
-        float desiredTextSize = testTextSize * desiredWidth / bounds.width();
-        DEFAULT_SPACE_TEXT = desiredTextSize / 2;
+        DEFAULT_SPACE_TEXT = testTextSize * desiredWidth / bounds.width();
 
-        paint.setTextSize(desiredTextSize);
+        paint.setTextSize(DEFAULT_SPACE_TEXT);
     }
 
     private static int dpToPx(float dp) {
@@ -152,8 +154,30 @@ public class TempView extends View {
         this.isIndicator = isIndicator;
     }
 
-    public void setTextCenter(String time) {
-        this.mStringTextCenter = time;
+    public void setTemp(float value) {
+
+
+        if (value > 0) {
+
+            if (Math.round(value) > 9) {
+                mStringTextCenter = String.format("%s C°", Math.round(value));
+            } else {
+                mStringTextCenter = String.format("0%s C°", Math.round(value));
+            }
+
+        } else {
+
+            if (Math.round(value) > -9) {
+                mStringTextCenter = String.format("%s C°", String.valueOf(Math.round(value)).replace("-", "-0"));
+            } else {
+                mStringTextCenter = String.format("%s C°", Math.round(value));
+            }
+        }
+
+        setCurrentValue(value);
+
+        invalidate();
+
     }
 
     public void setTextStatus(String status) {
@@ -174,11 +198,11 @@ public class TempView extends View {
                 isIndicator = a.getBoolean(R.styleable.TempView_tv_is_indicator, true);
 
                 mColorBackgroundProgress = a.getColor(R.styleable.TempView_tv_color_background_progress, DEFAULT_BACKGROUND_PROGRESS_COLOR);
-                mColorValue = a.getColor(R.styleable.TempView_tv_color_start_time_stroke, DEFAULT_START_TIME_STROKE_COLOR);
+                mColorValue = a.getColor(R.styleable.TempView_tv_color_value, DEFAULT_START_TIME_STROKE_COLOR);
                 mColorProgress = a.getColor(R.styleable.TempView_tv_color_progress, DEFAULT_PROGRESS_COLOR);
                 mColorTextTime = a.getColor(R.styleable.TempView_tv_color_text_time, DEFAULT_TEXT_TIME_COLOR);
 
-                mStrokeWithCircle = a.getDimension(R.styleable.TempView_tv_stroke_width_circles, DEFAULT_CIRCLE_STROKE_WIDTH);
+                mStrokeWithCircle = a.getDimension(R.styleable.TempView_tv_stroke_width_circle, DEFAULT_CIRCLE_STROKE_WIDTH);
                 mStrokeWithBackgroundProgress = a.getDimension(R.styleable.TempView_tv_stroke_width_background_progress, DEFAULT_BACKGROUND_PROGRESS_STROKE_WIDTH);
 
                 mStringTextCenter = a.getString(R.styleable.TempView_tv_text_center);
@@ -196,11 +220,13 @@ public class TempView extends View {
 
                 setCurrentValue(a.getFloat(R.styleable.TempView_tv_current_value, 0));
 
+                setTemp(rollbackValue(mFloatValue));
+
 
             } finally {
+
                 a.recycle();
             }
-
 
             mPaintBackgroundProgress = new Paint();
             mPaintBackgroundProgress.setAntiAlias(true);
@@ -238,18 +264,18 @@ public class TempView extends View {
             mPaintHandClockColored.setStyle(Paint.Style.STROKE);
             mPaintHandClockColored.setStrokeCap(Paint.Cap.ROUND);
 
-            mPaintTextTime = new Paint();
-            mPaintTextTime.setAntiAlias(true);
-            mPaintTextTime.setColor(mColorTextTime);
-            mPaintTextTime.setTextAlign(Paint.Align.CENTER);
-            mPaintTextTime.setStyle(Paint.Style.FILL_AND_STROKE);
+            mPaintCenterText = new Paint();
+            mPaintCenterText.setAntiAlias(true);
+            mPaintCenterText.setColor(mColorTextTime);
+            mPaintCenterText.setTextAlign(Paint.Align.CENTER);
+            mPaintCenterText.setStyle(Paint.Style.FILL_AND_STROKE);
 
-            mPaintTextReaming = new Paint();
-            mPaintTextReaming.setAntiAlias(true);
-            mPaintTextReaming.setColor(mColorTextTime);
-            mPaintTextReaming.setTextAlign(Paint.Align.CENTER);
-            mPaintTextReaming.setStyle(Paint.Style.FILL_AND_STROKE);
-            mPaintTextReaming.setTypeface(Typeface.create(Typeface.DEFAULT, Typeface.ITALIC));
+            mPaintTopText = new Paint();
+            mPaintTopText.setAntiAlias(true);
+            mPaintTopText.setColor(mColorTextTime);
+            mPaintTopText.setTextAlign(Paint.Align.CENTER);
+            mPaintTopText.setStyle(Paint.Style.FILL_AND_STROKE);
+            mPaintTopText.setTypeface(Typeface.create(Typeface.DEFAULT, Typeface.ITALIC));
 
             mRectProgress = new RectF();
             mRectBackground = new RectF();
@@ -257,6 +283,27 @@ public class TempView extends View {
 
         }
 
+    }
+
+    public static void fillCircleStrokeBorder(
+            Canvas c, float cx, float cy, float radius,
+            int circleColor, float borderWidth, int borderColor, Paint p) {
+
+        int saveColor = p.getColor();
+        p.setColor(circleColor);
+        Paint.Style saveStyle = p.getStyle();
+        p.setStyle(Paint.Style.FILL);
+        c.drawCircle(cx, cy, radius, p);
+        if (borderWidth > 0) {
+            p.setColor(borderColor);
+            p.setStyle(Paint.Style.STROKE);
+            float saveStrokeWidth = p.getStrokeWidth();
+            p.setStrokeWidth(borderWidth);
+            c.drawCircle(cx, cy, radius - (borderWidth / 2), p);
+            p.setStrokeWidth(saveStrokeWidth);
+        }
+        p.setColor(saveColor);
+        p.setStyle(saveStyle);
     }
 
     private float getDegreePerHand() {
@@ -267,11 +314,10 @@ public class TempView extends View {
         float left = (mIntegerMaxValue - mIntegerMinValue);
         return left % 2 == 0 ? left : left + 1;
     }
+
     private float getLeftValue() {
-        return  (mIntegerMaxValue - mIntegerMinValue);
+        return (mIntegerMaxValue - mIntegerMinValue);
     }
-
-
 
     private float getSweepProgressArc() {
 
@@ -299,23 +345,29 @@ public class TempView extends View {
     }
 
     private float rotateValue(float value) {
-
-        Log.i(TAG, "value: "+value);
-        Log.i(TAG, "mIntegerMinValue: "+mIntegerMinValue);
-        Log.i(TAG, "getHandCount(): "+getHandCount());
-        Log.i(TAG, "mIntegerMaxValue: "+mIntegerMaxValue);
-        Log.i(TAG, "mIntegerMinValue: "+mIntegerMinValue);
-
         float _25 = getLeftValue() / 4;
         float _12_5 = getLeftValue() / 6;
 
         if (value <= _25)
-            value = value - _12_5 ;
+            value = value - _12_5;
 
         else
-            value = value - _12_5 ;
+            value = value - _12_5;
 
-        return value ;
+        return value;
+    }
+
+    private float rollbackValue(float value) {
+        float _25 = getLeftValue() / 4;
+        float _12_5 = getLeftValue() / 6;
+
+        if (value <= _25)
+            value = value + _12_5;
+
+        else
+            value = value + _12_5;
+
+        return value;
     }
 
     private float get25Percentage(float value) {
@@ -390,35 +442,35 @@ public class TempView extends View {
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
         super.onSizeChanged(w, h, oldw, oldh);
 
-        mFloatBeginOfClockLines = mRadiusBackgroundProgress - (mStrokeWithBackgroundProgress);
-        mFloatLengthOfClockLines = mRadiusBackgroundProgress - (mStrokeWithBackgroundProgress) - mStrokeWithCircle * 3;
+        mFloatBeginOfClockLines = mRadiusBackgroundProgress - (mStrokeWithBackgroundProgress * 1.6f);
+        mFloatLengthOfClockLines = mRadiusBackgroundProgress - (mStrokeWithBackgroundProgress) - (mStrokeWithCircle * 8);
 
         mRectBackground.set(
-                (float) mWidthBackgroundProgress / 2 - mRadiusBackgroundProgress,
-                (float) mHeightBackgroundProgress / 2 - mRadiusBackgroundProgress,
-                (float) mWidthBackgroundProgress / 2 + mRadiusBackgroundProgress,
-                (float) mHeightBackgroundProgress / 2 + mRadiusBackgroundProgress);
+                (float) mWidthBackgroundProgress / 2 - mRadiusBackgroundProgress + (mPaintBackgroundProgress.getStrokeWidth() / 1.2f),
+                (float) mHeightBackgroundProgress / 2 - mRadiusBackgroundProgress + (mPaintBackgroundProgress.getStrokeWidth() / 1.2f),
+                (float) mWidthBackgroundProgress / 2 + mRadiusBackgroundProgress - (mPaintBackgroundProgress.getStrokeWidth() / 1.2f),
+                (float) mHeightBackgroundProgress / 2 + mRadiusBackgroundProgress - (mPaintBackgroundProgress.getStrokeWidth() / 1.2f));
 
         mRectProgress.set(
-                (float) mWidthBackgroundProgress / 2 - mRadiusBackgroundProgress,
-                (float) mHeightBackgroundProgress / 2 - mRadiusBackgroundProgress,
-                (float) mWidthBackgroundProgress / 2 + mRadiusBackgroundProgress,
-                (float) mHeightBackgroundProgress / 2 + mRadiusBackgroundProgress);
+                (float) mWidthBackgroundProgress / 2 - mRadiusBackgroundProgress + (mPaintBackgroundProgress.getStrokeWidth() / 1.2f),
+                (float) mHeightBackgroundProgress / 2 - mRadiusBackgroundProgress + (mPaintBackgroundProgress.getStrokeWidth() / 1.2f),
+                (float) mWidthBackgroundProgress / 2 + mRadiusBackgroundProgress - (mPaintBackgroundProgress.getStrokeWidth() / 1.2f),
+                (float) mHeightBackgroundProgress / 2 + mRadiusBackgroundProgress - (mPaintBackgroundProgress.getStrokeWidth() / 1.2f));
 
 
         mRectClock.set(
-                ((float) (mWidthBackgroundProgress / 2) - mRadiusBackgroundProgress) + mPaintBackgroundProgress.getStrokeWidth(),
-                ((float) (mHeightBackgroundProgress / 2) - mRadiusBackgroundProgress) + mPaintBackgroundProgress.getStrokeWidth(),
-                ((float) (mWidthBackgroundProgress / 2) + mRadiusBackgroundProgress) - mPaintBackgroundProgress.getStrokeWidth(),
-                ((float) (mHeightBackgroundProgress / 2) + mRadiusBackgroundProgress) - mPaintBackgroundProgress.getStrokeWidth());
+                ((float) (mWidthBackgroundProgress / 2) - mRadiusBackgroundProgress),
+                ((float) (mHeightBackgroundProgress / 2) - mRadiusBackgroundProgress),
+                ((float) (mWidthBackgroundProgress / 2) + mRadiusBackgroundProgress),
+                ((float) (mHeightBackgroundProgress / 2) + mRadiusBackgroundProgress));
 
 
         if (mStringTextStatus.equals("")) {
-            setTextSizeForWidthSingleText(mPaintTextTime, mRadiusBackgroundProgress, mStringTextCenter);
+            setTextSizeForWidthSingleText(mPaintCenterText, mRadiusBackgroundProgress, mStringTextCenter);
         } else {
 
-            setTextSizeForWidth(mPaintTextReaming, mRadiusBackgroundProgress / 1.3f, mStringTextStatus);
-            setTextSizeForWidth(mPaintTextTime, mRadiusBackgroundProgress / 1.3f, mStringTextCenter);
+            setTextSizeForWidth(mPaintTopText, mRadiusBackgroundProgress  / 1.2f, mStringTextStatus);
+            setTextSizeForWidth(mPaintCenterText, mRadiusBackgroundProgress / 1.4f, mStringTextCenter);
         }
 
 
@@ -474,7 +526,8 @@ public class TempView extends View {
             mRadiusBackgroundProgress = DEFAULT_BACKGROUND_PROGRESS_RADIUS;
         }
 
-        int length = Math.min(mWidthBackgroundProgress, mHeightBackgroundProgress);
+        int length = Math.min(mWidthBackgroundProgress, mHeightBackgroundProgress) + (int) mStrokeWithCircle;
+
         setMeasuredDimension(length, length);
     }
 
@@ -482,27 +535,8 @@ public class TempView extends View {
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
 
-
-        float val  ;
-
-        if (mIntegerMinValue % 2 == 0 && mIntegerMaxValue % 2 == 0 ||
-                mIntegerMinValue % 2 != 0 && mIntegerMaxValue % 2 != 0
-        ){
-            val = mDegreeValue - 45;
-        }else {
-            val = mDegreeValue  -  (45f / 2);
-        }
-        Log.i(TAG, "onDraw: "+mDegreeValue);
-        Log.i(TAG, "mIntegerMinValue: "+mIntegerMinValue);
-        Log.i(TAG, "mIntegerMaxValue: "+mIntegerMaxValue);
-        Log.i(TAG, "val: "+val);
-
-       // mDegreeValue = val ;
-
-
-
-        float mFloatCenterXCircle = getDrawXOnBackgroundProgress(mDegreeValue, mRadiusBackgroundProgress, mWidthBackgroundProgress);
-        float mFloatCenterYCircle = getDrawYOnBackgroundProgress(mDegreeValue, mRadiusBackgroundProgress, mHeightBackgroundProgress);
+        float mFloatCenterXCircle = getDrawXOnBackgroundProgress(mDegreeValue, mRadiusBackgroundProgress - (mPaintBackgroundProgress.getStrokeWidth() / 1.2f), mWidthBackgroundProgress);
+        float mFloatCenterYCircle = getDrawYOnBackgroundProgress(mDegreeValue, mRadiusBackgroundProgress - (mPaintBackgroundProgress.getStrokeWidth() / 1.2f), mHeightBackgroundProgress);
         //ADD CIRCLE AREA FOR DETECT TOUCH
         mCircleArea = getCircleArea(mFloatCenterXCircle, mFloatCenterYCircle, mPaintBackgroundProgress.getStrokeWidth());
 
@@ -517,55 +551,50 @@ public class TempView extends View {
 
 
         //TEXT
-        canvas.drawText(mStringTextCenter, mWidthBackgroundProgress / 2, (float) (mHeightBackgroundProgress / 2) + DEFAULT_SPACE_TEXT, mPaintTextTime);
-        canvas.drawText(mStringTextStatus, mWidthBackgroundProgress / 2, (float) (mHeightBackgroundProgress / 2) - DEFAULT_SPACE_TEXT, mPaintTextReaming);
+        canvas.drawText(mStringTextCenter, mWidthBackgroundProgress / 2, (float) (mHeightBackgroundProgress / 2) + DEFAULT_SPACE_TEXT, mPaintCenterText);
+        canvas.drawText(mStringTextStatus, mWidthBackgroundProgress / 2, (float) (mHeightBackgroundProgress / 2) - DEFAULT_SPACE_TEXT, mPaintTopText);
 
 
         //CIRCLE VALUE
         if (!isIndicator)
-            canvas.drawCircle(mFloatCenterXCircle, mFloatCenterYCircle, mPaintBackgroundProgress.getStrokeWidth() / 2, mPaintValue);
+            fillCircleStrokeBorder(canvas, mFloatCenterXCircle, mFloatCenterYCircle, mPaintBackgroundProgress.getStrokeWidth() / 2f, Color.WHITE, mStrokeWithCircle, mColorValue, mPaintValue);
 
-      /*
+
         {
-        //LINES
-        float angel = 270;
-        float x1, y1, x2, y2;
+            //LINES
+            float angel = 270;
+            float x1, y1, x2, y2;
 
-        int count = (int) getHandCount() ;
-        float degreePerHand = getDegreePerHand();
+            float degreePerHand = getDegreePerHand();
 
-        for (int i = 1; i <= count -3 ; i++) {
+            for (int i = 0; i <= getLeftValue(); i++) {
 
-            angel += degreePerHand;
+                angel += degreePerHand;
 
-            if (i % 2 != 0) {
-                x1 = (float) (Math.cos(Math.toRadians(angel))) * (mFloatBeginOfClockLines - 0) + (float) (mWidthBackgroundProgress / 2);
-                y1 = (float) (Math.sin(Math.toRadians(angel))) * (mFloatBeginOfClockLines - 0) + (float) (mHeightBackgroundProgress / 2);
-                x2 = (float) (Math.cos(Math.toRadians(angel))) * (mFloatLengthOfClockLines - 10) + (float) (mWidthBackgroundProgress / 2);
-                y2 = (float) (Math.sin(Math.toRadians(angel))) * (mFloatLengthOfClockLines - 10) + (float) (mHeightBackgroundProgress / 2);
+                if (i % 2 != 0) {
+                    x1 = (float) (Math.cos(Math.toRadians(angel))) * (mFloatBeginOfClockLines - 0) + (float) (mWidthBackgroundProgress / 2);
+                    y1 = (float) (Math.sin(Math.toRadians(angel))) * (mFloatBeginOfClockLines - 0) + (float) (mHeightBackgroundProgress / 2);
+                    x2 = (float) (Math.cos(Math.toRadians(angel))) * (mFloatLengthOfClockLines - 10) + (float) (mWidthBackgroundProgress / 2);
+                    y2 = (float) (Math.sin(Math.toRadians(angel))) * (mFloatLengthOfClockLines - 10) + (float) (mHeightBackgroundProgress / 2);
 
-            } else {
-                x1 = (float) (Math.cos(Math.toRadians(angel))) * (mFloatBeginOfClockLines - 10) + (float) (mWidthBackgroundProgress / 2);
-                y1 = (float) (Math.sin(Math.toRadians(angel))) * (mFloatBeginOfClockLines - 10) + (float) (mHeightBackgroundProgress / 2);
-                x2 = (float) (Math.cos(Math.toRadians(angel))) * (mFloatLengthOfClockLines - 0) + (float) (mWidthBackgroundProgress / 2);
-                y2 = (float) (Math.sin(Math.toRadians(angel))) * (mFloatLengthOfClockLines - 0) + (float) (mHeightBackgroundProgress / 2);
+                } else {
+                    x1 = (float) (Math.cos(Math.toRadians(angel))) * (mFloatBeginOfClockLines - 10) + (float) (mWidthBackgroundProgress / 2);
+                    y1 = (float) (Math.sin(Math.toRadians(angel))) * (mFloatBeginOfClockLines - 10) + (float) (mHeightBackgroundProgress / 2);
+                    x2 = (float) (Math.cos(Math.toRadians(angel))) * (mFloatLengthOfClockLines - 0) + (float) (mWidthBackgroundProgress / 2);
+                    y2 = (float) (Math.sin(Math.toRadians(angel))) * (mFloatLengthOfClockLines - 0) + (float) (mHeightBackgroundProgress / 2);
+                }
+
+                float current = rollbackValue(mFloatValue);
+
+                if (i < current)
+                    canvas.drawLine(x1, y1, x2, y2, mPaintHandClockColored);
+                else
+                    canvas.drawLine(x1, y1, x2, y2, mPaintHandClock);
+
             }
 
-            float current = rollbackValue();
-
-            if (i < current)
-                canvas.drawLine(x1, y1, x2, y2, mPaintHandClockColored);
-            else
-                canvas.drawLine(x1, y1, x2, y2, mPaintHandClock);
-
         }
 
-        }
-*/
-    }
-
-    private float rollbackValue() {
-        return mFloatValue < get75Percentage(mFloatValue) ? mFloatValue + get25Percentage(mFloatValue) - mIntegerMinValue : mFloatValue - get75Percentage(mFloatValue) - mIntegerMinValue;
     }
 
 
@@ -602,12 +631,16 @@ public class TempView extends View {
                 if (accessMoving) {
 
                     angel = getAngleFromPoint((double) mWidthBackgroundProgress / 2, (double) mHeightBackgroundProgress / 2, (double) x, (double) y) - 90;
+
                     if (angel < DEFAULT_END_DEGREE - 45 && angel + 45 > 0) {
 
                         mDegreeValue = (float) angel;
+                        int val = Math.round(getValueFromAngel(mDegreeValue));
+                        setTemp(val);
 
                         if (onSeekCirclesListener != null)
-                            onSeekCirclesListener.onSeekChange(Math.round(getValueFromAngel(mDegreeValue)));
+                            onSeekCirclesListener.onSeekChange(val);
+
 
                         invalidate();
                     }
