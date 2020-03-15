@@ -4,36 +4,51 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-
     tools:context=".MainActivity">
 
 
-
     <com.alirnp.tempview.TempView
-        android:id="@+id/tempView"
+        android:id="@+id/tempView1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:tv_current_value="5"
-        app:tv_is_indicator="false"
-        app:tv_stroke_width_background_progress="25dp"
         app:tv_color_background_progress="#92949C"
         app:tv_color_value="#1a8dff"
+        app:tv_current_value="5"
+        app:tv_is_indicator="false"
         app:tv_max_value="12"
-        app:tv_min_value="0" />
+        app:tv_min_value="-10"
+        app:tv_stroke_width_background_progress="25dp" />
+
+    <com.alirnp.tempview.TempView
+        android:id="@+id/tempView2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tempView1"
+        app:tv_color_background_progress="#92949C"
+        app:tv_color_progress="#1a8dff"
+        app:tv_color_value="#1a8dff"
+        app:tv_current_value="-2"
+        app:tv_is_indicator="true"
+        app:tv_max_value="14"
+        app:tv_min_value="-10"
+        app:tv_stroke_width_background_progress="25dp"
+        app:tv_text_color="#1a8dff" />
 
     <TextView
         android:id="@+id/statusTemp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        android:text="show"
-        android:textSize="25dp"
         android:layout_marginBottom="20dp"
-        app:layout_constraintEnd_toEndOf="parent"/>
+        android:text="status"
+        android:textSize="25sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tempView2" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

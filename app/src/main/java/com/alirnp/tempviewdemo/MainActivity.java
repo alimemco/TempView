@@ -9,20 +9,21 @@ import com.alirnp.tempview.TempView;
 
 public class MainActivity extends AppCompatActivity {
 
+    TempView mTempView1;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        TempView tempView = findViewById(R.id.tempView);
+        mTempView1 = findViewById(R.id.tempView1);
         TextView textView = findViewById(R.id.statusTemp);
 
-       // tempView.setMinValue(10);
-       // tempView.setMaxValue(20);
-       // tempView.setCurrentValue(15);
-       // tempView.setTemp(10);
 
-        tempView.setOnSeekCirclesListener(new TempView.OnSeekChangeListener() {
+       // setIndicatorModeValues(mTempView1);
+
+
+        mTempView1.setOnSeekCirclesListener(new TempView.OnSeekChangeListener() {
             @Override
             public void onSeekChange(int value) {
                 textView.setText(String.format("onSeekChange : value = %s", value));
@@ -34,5 +35,12 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+    }
+
+    private void setIndicatorModeValues(TempView mTempView) {
+        mTempView.setMinValue(10);
+        mTempView.setMaxValue(20);
+        mTempView.setCurrentValue(15);
+        mTempView.setTemp(10);
     }
 }
