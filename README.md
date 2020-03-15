@@ -40,7 +40,3 @@ in java :
                 textView.setText(String.format("value = %s", value));
             }
         });
-    ```    
-        
-        
-
