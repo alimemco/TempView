@@ -10,7 +10,6 @@ import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.Typeface;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 
@@ -110,15 +109,12 @@ public class TempView extends View {
         invalidate();
     }*/
 
-    public void mSetCurrentValue(float value) {
+    private void setCurrentValue(float value) {
         this.mFloatValue = value;
         value = validateValue(value);
         value = rotateValue(value);
 
         mDegreeValue = (value - mIntegerMinValue) * getDegreePerHand() ;
-
-        // TODO: 3/15/2020
-
 
     }
 
@@ -166,65 +162,13 @@ public class TempView extends View {
         this.isIndicator = isIndicator;
     }
 
-    /*  public void setTemp(float value) {
-
-          if (value > 0) {
-
-              if (Math.round(value) > 9) {
-                  mStringTextCenter = String.format("%s C°", Math.round(value));
-              } else {
-                  mStringTextCenter = String.format("0%s C°", Math.round(value));
-              }
-
-          } else {
-
-              if (Math.round(value) == 0) {
-                  mStringTextCenter = String.format("0%s C°", Math.round(value));
-              } else if (Math.round(value) > -9) {
-                  mStringTextCenter = String.format("%s C°", String.valueOf(Math.round(value)).replace("-", "-0"));
-              } else {
-                  mStringTextCenter = String.format("%s C°", Math.round(value));
-              }
-          }
-
-          setCurrentValue(value);
-
-          invalidate();
-
-      }*/
     public void setTemp(float value) {
         mStringTextCenter = String.format("%s C°", Math.round(value));
-        // setCurrentValue(value);
+        mFloatValue = value;
         invalidate();
 
     }
 
-    private void mSetTemp(float value) {
-        mStringTextCenter = String.format("%s C°", Math.round(value));
-        /*
-        if (value > 0) {
-
-            if (Math.round(value) > 9) {
-                mStringTextCenter = String.format("%s C°", Math.round(value));
-            } else {
-                mStringTextCenter = String.format("0%s C°", Math.round(value));
-            }
-
-        } else {
-
-            if (Math.round(value) == 0) {
-                mStringTextCenter = String.format("0%s C°", Math.round(value));
-            } else if (Math.round(value) > -9) {
-                mStringTextCenter = String.format("%s C°", String.valueOf(Math.round(value)).replace("-", "-0"));
-            } else {
-                mStringTextCenter = String.format("%s C°", Math.round(value));
-            }
-        }
-*/
-
-       // invalidate();
-
-    }
 
     public void setTextStatus(String status) {
         this.mStringTextStatus = status;
@@ -264,8 +208,8 @@ public class TempView extends View {
                 mIntegerMinValue = a.getFloat(R.styleable.TempView_tv_min_value, DEFAULT_MIN_VALUE);
                 mIntegerMaxValue = a.getFloat(R.styleable.TempView_tv_max_value, DEFAULT_MAX_VALUE);
 
-                mSetCurrentValue(a.getFloat(R.styleable.TempView_tv_current_value, 0));
-                mSetTemp(mFloatValue);
+                setCurrentValue(a.getFloat(R.styleable.TempView_tv_current_value, 0));
+                setTemp(mFloatValue);
 
 
             } finally {
@@ -657,20 +601,17 @@ public class TempView extends View {
 
                     angel = getAngleFromPoint((double) mWidthBackgroundProgress / 2, (double) mHeightBackgroundProgress / 2, (double) x, (double) y) - 90;
 
-                    Log.i(TAG, "bef: "+angel);
 
                     if (angel > (START_DEGREE - 360) && angel < (END_DEGREE - 90)) {
-                        Log.i(TAG, "angel: "+angel);
                         mDegreeValue = (float) angel;
 
-                        mSetCurrentValue(getValueFromAngel(mDegreeValue));
+                        setCurrentValue(getValueFromAngel(mDegreeValue));
 
                         int val = Math.round(getValueFromAngel(mDegreeValue));
-                        mSetTemp(val);
+                        setTemp(val);
 
                         if (onSeekCirclesListener != null)
                             onSeekCirclesListener.onSeekChange(val);
-
 
                         invalidate();
                     }

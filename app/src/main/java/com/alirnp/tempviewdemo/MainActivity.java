@@ -20,7 +20,7 @@ public class MainActivity extends AppCompatActivity {
         TextView textView = findViewById(R.id.statusTemp);
 
 
-       // setIndicatorModeValues(mTempView1);
+        setIndicatorModeValues(mTempView1);
 
 
         mTempView1.setOnSeekCirclesListener(new TempView.OnSeekChangeListener() {
@@ -40,7 +40,6 @@ public class MainActivity extends AppCompatActivity {
     private void setIndicatorModeValues(TempView mTempView) {
         mTempView.setMinValue(10);
         mTempView.setMaxValue(20);
-       // mTempView.setCurrentValue(15);
-        mTempView.setTemp(10);
+        mTempView.setTemp(15);
     }
 }
