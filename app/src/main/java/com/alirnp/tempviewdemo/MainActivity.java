@@ -40,7 +40,7 @@ public class MainActivity extends AppCompatActivity {
     private void setIndicatorModeValues(TempView mTempView) {
         mTempView.setMinValue(10);
         mTempView.setMaxValue(20);
-        mTempView.setCurrentValue(15);
+       // mTempView.setCurrentValue(15);
         mTempView.setTemp(10);
     }
 }

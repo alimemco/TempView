@@ -10,6 +10,7 @@ import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.Typeface;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 
@@ -31,12 +32,12 @@ public class TempView extends View {
     private final static float DEFAULT_MIN_VALUE = -10;
     private final static float DEFAULT_MAX_VALUE = 14;
 
-    private final static float DEFAULT_START_DEGREE = 315;
-    private final static float DEFAULT_END_DEGREE = 270;
+    private final static float START_DEGREE = 270;
+    private final static float END_DEGREE = 310;
 
     /*
-    private final static float DEFAULT_START_DEGREE = -90 ;
-    private final static float DEFAULT_END_DEGREE = 270 ;
+    private final static float START_DEGREE = -90 ;
+    private final static float END_DEGREE = 270 ;
 */
     private Context context;
     private float mDegreeValue;
@@ -97,7 +98,7 @@ public class TempView extends View {
         this.onSeekCirclesListener = onSeekCirclesListener;
     }
 
-    public void setCurrentValue(float value) {
+   /* public void setCurrentValue(float value) {
 
         value = validateValue(value);
         value = rotateValue(value);
@@ -107,6 +108,18 @@ public class TempView extends View {
         mDegreeValue = (value - mIntegerMinValue) * getDegreePerHand();
 
         invalidate();
+    }*/
+
+    public void mSetCurrentValue(float value) {
+        this.mFloatValue = value;
+        value = validateValue(value);
+        value = rotateValue(value);
+
+        mDegreeValue = (value - mIntegerMinValue) * getDegreePerHand() ;
+
+        // TODO: 3/15/2020
+
+
     }
 
     public void setMinValue(float value) {
@@ -153,33 +166,40 @@ public class TempView extends View {
         this.isIndicator = isIndicator;
     }
 
-  /*  public void setTemp(float value) {
+    /*  public void setTemp(float value) {
 
-        if (value > 0) {
+          if (value > 0) {
 
-            if (Math.round(value) > 9) {
-                mStringTextCenter = String.format("%s C°", Math.round(value));
-            } else {
-                mStringTextCenter = String.format("0%s C°", Math.round(value));
-            }
+              if (Math.round(value) > 9) {
+                  mStringTextCenter = String.format("%s C°", Math.round(value));
+              } else {
+                  mStringTextCenter = String.format("0%s C°", Math.round(value));
+              }
 
-        } else {
+          } else {
 
-            if (Math.round(value) == 0) {
-                mStringTextCenter = String.format("0%s C°", Math.round(value));
-            } else if (Math.round(value) > -9) {
-                mStringTextCenter = String.format("%s C°", String.valueOf(Math.round(value)).replace("-", "-0"));
-            } else {
-                mStringTextCenter = String.format("%s C°", Math.round(value));
-            }
-        }
+              if (Math.round(value) == 0) {
+                  mStringTextCenter = String.format("0%s C°", Math.round(value));
+              } else if (Math.round(value) > -9) {
+                  mStringTextCenter = String.format("%s C°", String.valueOf(Math.round(value)).replace("-", "-0"));
+              } else {
+                  mStringTextCenter = String.format("%s C°", Math.round(value));
+              }
+          }
 
-        setCurrentValue(value);
+          setCurrentValue(value);
 
+          invalidate();
+
+      }*/
+    public void setTemp(float value) {
+        mStringTextCenter = String.format("%s C°", Math.round(value));
+        // setCurrentValue(value);
         invalidate();
 
-    }*/
-    public void setTemp(float value) {
+    }
+
+    private void mSetTemp(float value) {
         mStringTextCenter = String.format("%s C°", Math.round(value));
         /*
         if (value > 0) {
@@ -201,9 +221,8 @@ public class TempView extends View {
             }
         }
 */
-        setCurrentValue(value);
 
-        invalidate();
+       // invalidate();
 
     }
 
@@ -245,9 +264,8 @@ public class TempView extends View {
                 mIntegerMinValue = a.getFloat(R.styleable.TempView_tv_min_value, DEFAULT_MIN_VALUE);
                 mIntegerMaxValue = a.getFloat(R.styleable.TempView_tv_max_value, DEFAULT_MAX_VALUE);
 
-                setCurrentValue(a.getFloat(R.styleable.TempView_tv_current_value, 0));
-
-                setTemp(rollbackValue(mFloatValue));
+                mSetCurrentValue(a.getFloat(R.styleable.TempView_tv_current_value, 0));
+                mSetTemp(mFloatValue);
 
 
             } finally {
@@ -334,13 +352,7 @@ public class TempView extends View {
     }
 
     private float getDegreePerHand() {
-        return DEFAULT_END_DEGREE / getLeftValue();
-    }
-
-
-    private float getHandCount() {
-        float left = (mIntegerMaxValue - mIntegerMinValue);
-        return left % 2 == 0 ? left : left;
+        return END_DEGREE / getLeftValue();
     }
 
     private float getLeftValue() {
@@ -349,9 +361,9 @@ public class TempView extends View {
 
     private float getSweepProgressArc() {
 
-        float sweep = (DEFAULT_START_DEGREE < mDegreeValue) ? mDegreeValue - DEFAULT_START_DEGREE : 360 - (DEFAULT_START_DEGREE - mDegreeValue);
+        float sweep = (START_DEGREE < mDegreeValue) ? mDegreeValue - START_DEGREE : 360 - (START_DEGREE - mDegreeValue);
 
-        if (mDegreeValue == DEFAULT_START_DEGREE)
+        if (mDegreeValue == START_DEGREE)
             sweep = 1;
 
 
@@ -372,38 +384,25 @@ public class TempView extends View {
         return drawY;
     }
 
+
     private float rotateValue(float value) {
-        float _25 = getLeftValue() / 4;
-        float _12_5 = getLeftValue() / 6;
-
-        if (value <= _25)
-            value = value - _12_5;
-
-        else
-            value = value - _12_5;
-
+        float _3_5 = getLeftValue() / 3.5f;
+        value =   value  - _3_5 ;
         return value;
     }
-
     private float rollbackValue(float value) {
-        float _25 = getLeftValue() / 4;
-        float _12_5 = getLeftValue() / 6;
-
-        if (value <= _25)
-            value = value + _12_5;
-
-        else
-            value = value + _12_5;
-
+        float _3_5 = getLeftValue() ;
+        value =   value  + _3_5 ;
         return value;
     }
 
-    private float get25Percentage(float value) {
-        return value / 4;
-    }
+  /*  private float rollbackValue(float value) {
+        value = value - (getEmptySpace());
+        return value;
+    }*/
 
-    private float get75Percentage(float value) {
-        return get25Percentage(value) * 3;
+    private float getEmptySpace() {
+        return (getLeftValue() / getDegreePerHand()) * 2;
     }
 
     private float validateValue(float value) {
@@ -417,11 +416,7 @@ public class TempView extends View {
     }
 
     private float getValueFromAngel(double angel) {
-        return (float) ((angel + 45) / getDegreePerHand()) + mIntegerMinValue;
-    }
-
-    private float rollbackValueFromAngel(double angel) {
-        return (float) ((angel - 90) / getDegreePerHand()) + mIntegerMinValue;
+        return (float) ((angel + (360 - START_DEGREE)) / getDegreePerHand()) + mIntegerMinValue;
     }
 
     private int getDesireHeight() {
@@ -492,12 +487,12 @@ public class TempView extends View {
                 ((float) (mWidthBackgroundProgress / 2) + mRadiusBackgroundProgress),
                 ((float) (mHeightBackgroundProgress / 2) + mRadiusBackgroundProgress));
 
-      if (!isIndicator ){
-          setTextSizeForWidthSingleText(mPaintCenterText, mRadiusBackgroundProgress/ 1.6f, mStringTextCenter);
-      }else {
-          setTextSizeForWidth(mPaintTopText, mRadiusBackgroundProgress / 1.2f, mStringTextStatus);
-          setTextSizeForWidth(mPaintCenterText, mRadiusBackgroundProgress / 1.4f, mStringTextCenter);
-      }
+        if (!isIndicator) {
+            setTextSizeForWidthSingleText(mPaintCenterText, mRadiusBackgroundProgress / 1.6f, mStringTextCenter);
+        } else {
+            setTextSizeForWidth(mPaintTopText, mRadiusBackgroundProgress / 1.2f, mStringTextStatus);
+            setTextSizeForWidth(mPaintCenterText, mRadiusBackgroundProgress / 1.4f, mStringTextCenter);
+        }
 
 
     }
@@ -568,16 +563,15 @@ public class TempView extends View {
 
 
         //BACKGROUNDS
-        canvas.drawArc(mRectBackground, DEFAULT_START_DEGREE, DEFAULT_END_DEGREE, false, mPaintBackgroundProgress);
+        canvas.drawArc(mRectBackground, START_DEGREE, END_DEGREE, false, mPaintBackgroundProgress);
 
 
         float sweep = getSweepProgressArc();
         //PROGRESS TIME
-        canvas.drawArc(mRectProgress, DEFAULT_START_DEGREE, sweep, false, mPaintTimeProgress);
+        canvas.drawArc(mRectProgress, START_DEGREE, sweep, false, mPaintTimeProgress);
 
 
         //TEXT
-
         if (isIndicator) {
             canvas.drawText(mStringTextStatus, mWidthBackgroundProgress / 2, (float) (mHeightBackgroundProgress / 2) - DEFAULT_SPACE_TEXT, mPaintTopText);
             canvas.drawText(mStringTextCenter, mWidthBackgroundProgress / 2, (float) (mHeightBackgroundProgress / 2) + DEFAULT_SPACE_TEXT, mPaintCenterText);
@@ -594,7 +588,8 @@ public class TempView extends View {
         {
             //LINES
 
-            float angel = DEFAULT_START_DEGREE - getDegreePerHand();
+            float angel = START_DEGREE - getDegreePerHand();
+
             float x1, y1, x2, y2;
 
             for (int i = -1; i < getLeftValue(); i++) {
@@ -614,7 +609,8 @@ public class TempView extends View {
                     y2 = (float) (Math.sin(Math.toRadians(angel))) * (mFloatLengthOfClockLines - 0) + (float) (mHeightBackgroundProgress / 2);
                 }
 
-                float current = rollbackValue(mFloatValue) - mIntegerMinValue;
+                float current = mFloatValue  - 0.5f - mIntegerMinValue;
+
 
                 if (i < current)
                     canvas.drawLine(x1, y1, x2, y2, mPaintHandClockColored);
@@ -661,11 +657,16 @@ public class TempView extends View {
 
                     angel = getAngleFromPoint((double) mWidthBackgroundProgress / 2, (double) mHeightBackgroundProgress / 2, (double) x, (double) y) - 90;
 
-                    if (angel < DEFAULT_END_DEGREE - 45 && angel + 45 > 0) {
+                    Log.i(TAG, "bef: "+angel);
 
+                    if (angel > (START_DEGREE - 360) && angel < (END_DEGREE - 90)) {
+                        Log.i(TAG, "angel: "+angel);
                         mDegreeValue = (float) angel;
+
+                        mSetCurrentValue(getValueFromAngel(mDegreeValue));
+
                         int val = Math.round(getValueFromAngel(mDegreeValue));
-                        setTemp(val);
+                        mSetTemp(val);
 
                         if (onSeekCirclesListener != null)
                             onSeekCirclesListener.onSeekChange(val);
