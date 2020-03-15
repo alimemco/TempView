@@ -27,7 +27,8 @@ public class TempView extends View {
     private final static int DEFAULT_START_TIME_STROKE_COLOR = Color.parseColor("#00E676");
     private final static int DEFAULT_CLOCK_COLOR = Color.parseColor("#CFD8DC");
     private final static int DEFAULT_TEXT_TIME_COLOR = Color.parseColor("#2196F3");
-    private static float DEFAULT_SPACE_TEXT = dpToPx(45);
+    private static float DEFAULT_SPACE_TEXT = 45;
+    private static int DEFAULT_TEXT_SIZE = dpToPx(40);
     private final static float DEFAULT_MIN_VALUE = -10;
     private final static float DEFAULT_MAX_VALUE = 14;
 
@@ -55,8 +56,8 @@ public class TempView extends View {
     private Paint mPaintTimeProgress;
     private Paint mPaintHandClock;
     private Paint mPaintHandClockColored;
-    private Paint mPaintCenterText;
     private Paint mPaintTopText;
+    private Paint mPaintCenterText;
     private RectF mRectBackground;
     private RectF mRectProgress;
     private RectF mRectClock;
@@ -73,6 +74,8 @@ public class TempView extends View {
     private static final String TAG = "TempViewLog";
     private float mIntegerMinValue;
     private float mIntegerMaxValue;
+    private int mTextSizeTop;
+    private int mTextSizeCenter;
 
     public TempView(Context context) {
         super(context);
@@ -97,24 +100,12 @@ public class TempView extends View {
         this.onSeekCirclesListener = onSeekCirclesListener;
     }
 
-   /* public void setCurrentValue(float value) {
-
-        value = validateValue(value);
-        value = rotateValue(value);
-
-        this.mFloatValue = value;
-
-        mDegreeValue = (value - mIntegerMinValue) * getDegreePerHand();
-
-        invalidate();
-    }*/
-
     private void setCurrentValue(float value) {
         this.mFloatValue = value;
         value = validateValue(value);
         value = rotateValue(value);
 
-        mDegreeValue = (value - mIntegerMinValue) * getDegreePerHand() ;
+        mDegreeValue = (value - mIntegerMinValue) * getDegreePerHand();
 
     }
 
@@ -127,6 +118,7 @@ public class TempView extends View {
         mIntegerMaxValue = value;
         invalidate();
     }
+
 
     private static void setTextSizeForWidth(Paint paint, float desiredWidth, String text) {
 
@@ -208,6 +200,9 @@ public class TempView extends View {
                 mIntegerMinValue = a.getFloat(R.styleable.TempView_tv_min_value, DEFAULT_MIN_VALUE);
                 mIntegerMaxValue = a.getFloat(R.styleable.TempView_tv_max_value, DEFAULT_MAX_VALUE);
 
+                mTextSizeTop = a.getDimensionPixelSize(R.styleable.TempView_tv_text_top_size, DEFAULT_TEXT_SIZE);
+                mTextSizeCenter = a.getDimensionPixelSize(R.styleable.TempView_tv_text_center_size, DEFAULT_TEXT_SIZE);
+
                 setCurrentValue(a.getFloat(R.styleable.TempView_tv_current_value, 0));
                 setTemp(mFloatValue);
 
@@ -258,6 +253,7 @@ public class TempView extends View {
             mPaintCenterText.setColor(mColorText);
             mPaintCenterText.setTextAlign(Paint.Align.CENTER);
             mPaintCenterText.setStyle(Paint.Style.FILL_AND_STROKE);
+            mPaintCenterText.setTextSize(mTextSizeCenter);
 
             mPaintTopText = new Paint();
             mPaintTopText.setAntiAlias(true);
@@ -265,6 +261,7 @@ public class TempView extends View {
             mPaintTopText.setTextAlign(Paint.Align.CENTER);
             mPaintTopText.setStyle(Paint.Style.FILL_AND_STROKE);
             mPaintTopText.setTypeface(Typeface.create(Typeface.DEFAULT, Typeface.ITALIC));
+            mPaintTopText.setTextSize(mTextSizeTop);
 
             mRectProgress = new RectF();
             mRectBackground = new RectF();
@@ -331,22 +328,8 @@ public class TempView extends View {
 
     private float rotateValue(float value) {
         float _3_5 = getLeftValue() / 3.5f;
-        value =   value  - _3_5 ;
+        value = value - _3_5;
         return value;
-    }
-    private float rollbackValue(float value) {
-        float _3_5 = getLeftValue() ;
-        value =   value  + _3_5 ;
-        return value;
-    }
-
-  /*  private float rollbackValue(float value) {
-        value = value - (getEmptySpace());
-        return value;
-    }*/
-
-    private float getEmptySpace() {
-        return (getLeftValue() / getDegreePerHand()) * 2;
     }
 
     private float validateValue(float value) {
@@ -434,8 +417,8 @@ public class TempView extends View {
         if (!isIndicator) {
             setTextSizeForWidthSingleText(mPaintCenterText, mRadiusBackgroundProgress / 1.6f, mStringTextCenter);
         } else {
-            setTextSizeForWidth(mPaintTopText, mRadiusBackgroundProgress / 1.2f, mStringTextStatus);
-            setTextSizeForWidth(mPaintCenterText, mRadiusBackgroundProgress / 1.4f, mStringTextCenter);
+            //  setTextTop(mPaintTopText, mRadiusBackgroundProgress -(mPaintBackgroundProgress.getStrokeWidth() / 1.2f) , mStringTextStatus);
+            // setTextSizeForWidth(mPaintCenterText, mRadiusBackgroundProgress / 1.4f, mStringTextCenter);
         }
 
 
@@ -517,8 +500,8 @@ public class TempView extends View {
 
         //TEXT
         if (isIndicator) {
-            canvas.drawText(mStringTextStatus, mWidthBackgroundProgress / 2, (float) (mHeightBackgroundProgress / 2) - DEFAULT_SPACE_TEXT, mPaintTopText);
-            canvas.drawText(mStringTextCenter, mWidthBackgroundProgress / 2, (float) (mHeightBackgroundProgress / 2) + DEFAULT_SPACE_TEXT, mPaintCenterText);
+            canvas.drawText(mStringTextStatus, mWidthBackgroundProgress / 2, (float) (mHeightBackgroundProgress / 2) - (DEFAULT_SPACE_TEXT / 1.6f), mPaintTopText);
+            canvas.drawText(mStringTextCenter, mWidthBackgroundProgress / 2, (float) (mHeightBackgroundProgress / 2) + (DEFAULT_SPACE_TEXT / 1.6f), mPaintCenterText);
         } else {
             canvas.drawText(mStringTextCenter, (float) mWidthBackgroundProgress / 2, (float) mHeightBackgroundProgress / 2 + mPaintBackgroundProgress.getStrokeWidth() / 2, mPaintCenterText);
         }
@@ -553,7 +536,7 @@ public class TempView extends View {
                     y2 = (float) (Math.sin(Math.toRadians(angel))) * (mFloatLengthOfClockLines - 0) + (float) (mHeightBackgroundProgress / 2);
                 }
 
-                float current = mFloatValue  - 0.5f - mIntegerMinValue;
+                float current = mFloatValue - 0.5f - mIntegerMinValue;
 
 
                 if (i < current)

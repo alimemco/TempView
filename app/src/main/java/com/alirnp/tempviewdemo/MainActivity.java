@@ -20,7 +20,7 @@ public class MainActivity extends AppCompatActivity {
         TextView textView = findViewById(R.id.statusTemp);
 
 
-        setIndicatorModeValues(mTempView1);
+        // setIndicatorModeValues(mTempView1);
 
 
         mTempView1.setOnSeekCirclesListener(new TempView.OnSeekChangeListener() {
