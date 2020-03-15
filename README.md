@@ -24,7 +24,7 @@ in XML :
 indicator Mode
 ```xml
  app:tv_is_indicator="true"
-    ```    
+```    
         
 in java :
 ```java
