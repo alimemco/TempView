@@ -17,13 +17,14 @@ in XML :
         app:tv_min_value="0"
         app:tv_stroke_width_background_progress="25dp"
         app:tv_text_color="#1a8dff" />
+```
         
         
 
 indicator Mode
 ```xml
  app:tv_is_indicator="true"
-        
+    ```    
         
 in java :
 ```java
@@ -39,7 +40,7 @@ in java :
                 textView.setText(String.format("value = %s", value));
             }
         });
-        
+    ```    
         
         
 
