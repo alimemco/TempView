@@ -29,7 +29,8 @@ indicator Mode
 in java :
 ```java
    TempView mTempView = findViewById(R.id.tempView);
-    mTempView.setOnSeekCirclesListener(new TempView.OnSeekChangeListener() {
+   
+   mTempView.setOnSeekCirclesListener(new TempView.OnSeekChangeListener() {
             @Override
             public void onSeekChange(int value) {
                 textView.setText(String.format("value = %s", value));
