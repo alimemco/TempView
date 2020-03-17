@@ -1,10 +1,8 @@
-# TempViewDemo
-show temp in smart home
+## TempViewDemo   &nbsp; [![APK](https://img.shields.io/badge/APK-Demo-brightgreen.svg)](https://github.com/imaNNeoFighT/StepBarView/raw/master/repo_files/SbvDemo1-1-0.apk)
 
+show temp in smart home app
 
-in XML :
-
-Flexible Mode
+### Flexible Mode
 ```xml
     <com.alirnp.tempview.TempView
         android:id="@+id/tempView1"
@@ -21,8 +19,9 @@ Flexible Mode
         app:tv_min_value="-2"
         app:tv_stroke_width_background_progress="25dp" />
 ```
- 
-Indicator Mode
+<br />
+
+### Indicator Mode
 ```xml 
     <com.alirnp.tempview.TempView
         android:id="@+id/tempView2"
@@ -45,8 +44,19 @@ Indicator Mode
         app:tv_text_top_size="16sp" />  
 
 ``` 
-        
-in java :
+<br/>
+
+### Properties
+
+|xml|java|Type|Description|
+|:---:|:---:|:---:|:---:|
+|tv_current_value|`setCurrentValue`|float|set current temp|
+|tv_min_value|`setMinValue`|float|set minimum temp|
+|tv_max_value|`setMaxValue`|float|set maximun temp|
+
+<br/> 
+
+### Programmatically
 ```java
    TempView mTempView = findViewById(R.id.tempView);
    
