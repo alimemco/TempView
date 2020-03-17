@@ -8,6 +8,29 @@ download and use sample app [demo.apk](https://github.com/alipapital/TempViewDem
 
 <br />
 
+#### Step 1. Add the JitPack repository to your build file
+```gradle	
+allprojects {
+		repositories {
+			...
+			maven { url 'https://jitpack.io' }
+		}
+	}
+```
+
+<br />
+
+#### Step 2. Add the dependency
+```gradle	
+	dependencies {
+	        implementation 'com.github.alipapital:TempView:v1.0'
+	}
+```
+
+<br />
+
+#### Step 3. Add TempView in your layout
+
 ### Flexible Mode
 ```xml
     <com.alirnp.tempview.TempView
