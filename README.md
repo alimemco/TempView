@@ -8,16 +8,35 @@ download and use sample app [demo.apk](https://github.com/alipapital/TempViewDem
 
 <br />
 
+#### Step 1. Add the JitPack repository to your build file
+```gradle	
+allprojects {
+		repositories {
+			...
+			maven { url 'https://jitpack.io' }
+		}
+	}
+```
+
+<br />
+
+#### Step 2. Add the dependency
+```gradle	
+	dependencies {
+	        implementation 'com.github.alipapital:TempView:v1.0'
+	}
+```
+
+<br />
+
+#### Step 3. Add TempView in your layout
+
 ### Flexible Mode
 ```xml
     <com.alirnp.tempview.TempView
         android:id="@+id/tempView1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/statusTempView1"
         app:tv_color_background_progress="#B0BEC5"
         app:tv_color_value="#1a8dff"
         app:tv_color_degree="#1a8dff"
@@ -37,10 +56,6 @@ download and use sample app [demo.apk](https://github.com/alipapital/TempViewDem
         android:id="@+id/tempView2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintBottom_toTopOf="@+id/statusTempView2"
-        app:layout_constraintTop_toBottomOf="@id/line"
         app:tv_color_background_progress="#B0BEC5"
         app:tv_color_degree="#673AB7"
         app:tv_color_progress="#673AB7"
