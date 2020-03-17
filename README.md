@@ -13,8 +13,12 @@ show temp in smart home app
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:tv_color_background_progress="#92949C"
+        app:layout_constraintBottom_toTopOf="@id/statusTempView1"
+        app:tv_color_background_progress="#B0BEC5"
         app:tv_color_value="#1a8dff"
+        app:tv_color_degree="#1a8dff"
+        app:tv_color_progress="#1a8dff"
+        app:tv_color_text="#1a8dff"
         app:tv_current_value="6"
         app:tv_is_indicator="false"
         app:tv_max_value="14"
@@ -31,19 +35,20 @@ show temp in smart home app
         android:layout_height="wrap_content"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/tempView1"
-        app:tv_color_background_progress="#92949C"
-        app:tv_color_progress="#1a8dff"
-        app:tv_color_value="#1a8dff"
+        app:layout_constraintBottom_toTopOf="@+id/statusTempView2"
+        app:layout_constraintTop_toBottomOf="@id/line"
+        app:tv_color_background_progress="#B0BEC5"
+        app:tv_color_degree="#673AB7"
+        app:tv_color_progress="#673AB7"
+        app:tv_color_text="#673AB7"
         app:tv_current_value="6"
         app:tv_is_indicator="true"
         app:tv_max_value="14"
         app:tv_min_value="-2"
         app:tv_stroke_width_background_progress="25dp"
         app:tv_text_center_size="30sp"
-        app:tv_text_color="#1a8dff"
         app:tv_text_status="Freezer Temp"
-        app:tv_text_top_size="16sp" />  
+        app:tv_text_top_size="16sp" />
 
 ``` 
 <br/>
@@ -52,7 +57,7 @@ show temp in smart home app
 
 |xml|java|Type|Description|
 |:---:|:---:|:---:|:---:|
-|```xml tv_current_value```|`setCurrentValue`|float|set current temp|
+|`tv_current_value`|`setCurrentValue`|float|set current temp|
 |`tv_min_value`|`setMinValue`|float|set minimum temp|
 |`tv_max_value`|`setMaxValue`|float|set maximun temp|
 
