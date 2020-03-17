@@ -1,7 +1,4 @@
-## TempViewDemo   &nbsp; [![APK](https://img.shields.io/badge/APK-Demo-brightgreen.svg)](https://github.com/imaNNeoFighT/StepBarView/raw/master/repo_files/SbvDemo1-1-0.apk)
-
-[![APK](https://img.shields.io/badge/APK-Demo-brightgreen.svg)](https://github.com/alipapital/TempViewDemo/blob/master/app/tempView%20v1.apk)
-
+## TempViewDemo   &nbsp; [![APK](https://img.shields.io/badge/APK-Demo-brightgreen.svg)](https://github.com/alipapital/TempViewDemo/blob/master/app/tempView%20v1.apk)
 
 show temp in smart home app
 
@@ -55,9 +52,9 @@ show temp in smart home app
 
 |xml|java|Type|Description|
 |:---:|:---:|:---:|:---:|
-|tv_current_value|`setCurrentValue`|float|set current temp|
-|tv_min_value|`setMinValue`|float|set minimum temp|
-|tv_max_value|`setMaxValue`|float|set maximun temp|
+|```xml tv_current_value```|`setCurrentValue`|float|set current temp|
+|`tv_min_value`|`setMinValue`|float|set minimum temp|
+|`tv_max_value`|`setMaxValue`|float|set maximun temp|
 
 <br/> 
 
