@@ -1,6 +1,11 @@
 ## TempViewDemo   &nbsp; [![APK](https://img.shields.io/badge/APK-Demo-brightgreen.svg)](https://github.com/imaNNeoFighT/StepBarView/raw/master/repo_files/SbvDemo1-1-0.apk)
 
+[![APK](https://img.shields.io/badge/APK-Demo-brightgreen.svg)](https://github.com/alipapital/TempViewDemo/blob/master/app/tempView%20v1.apk)
+
+
 show temp in smart home app
+
+<br />
 
 ### Flexible Mode
 ```xml
