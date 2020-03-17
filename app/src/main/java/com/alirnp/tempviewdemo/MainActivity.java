@@ -17,7 +17,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         mTempView1 = findViewById(R.id.tempView1);
-        TextView textView = findViewById(R.id.statusTemp);
+        TextView textView = findViewById(R.id.statusTempView1);
 
 
         // setIndicatorModeValues(mTempView1);

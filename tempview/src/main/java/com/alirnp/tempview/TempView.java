@@ -17,7 +17,7 @@ import androidx.annotation.Nullable;
 
 public class TempView extends View {
 
-    private static final String DEFAULT_TEXT_TIME = "03:00";
+    private static final String DEFAULT_TEXT_TIME = "03 C`";
     private static final String DEFAULT_TEXT_STATUS = "temperature";
     private final static int DEFAULT_BACKGROUND_PROGRESS_COLOR = Color.parseColor("#F5F5F5");
     private final static float DEFAULT_BACKGROUND_PROGRESS_RADIUS = dpToPx(120);
@@ -26,7 +26,8 @@ public class TempView extends View {
     private final static int DEFAULT_PROGRESS_COLOR = Color.parseColor("#1a8dff");
     private final static int DEFAULT_START_TIME_STROKE_COLOR = Color.parseColor("#00E676");
     private final static int DEFAULT_CLOCK_COLOR = Color.parseColor("#CFD8DC");
-    private final static int DEFAULT_TEXT_TIME_COLOR = Color.parseColor("#2196F3");
+    private final static int DEFAULT_TEXT_COLOR = Color.parseColor("#2196F3");
+    private final static int DEFAULT_DEGREE_COLOR = Color.parseColor("#2196F3");
     private static float DEFAULT_SPACE_TEXT = 45;
     private static int DEFAULT_TEXT_SIZE = dpToPx(40);
     private final static float DEFAULT_MIN_VALUE = -10;
@@ -35,10 +36,6 @@ public class TempView extends View {
     private final static float START_DEGREE = 270;
     private final static float END_DEGREE = 310;
 
-    /*
-    private final static float START_DEGREE = -90 ;
-    private final static float END_DEGREE = 270 ;
-*/
     private Context context;
     private float mDegreeValue;
     private float mRadiusBackgroundProgress;
@@ -48,12 +45,13 @@ public class TempView extends View {
     private int mColorBackgroundProgress;
     private int mColorValue;
     private int mColorText;
+    private int mColorDegree;
     private float mFloatValue;
     private String mStringTextCenter;
     private String mStringTextStatus;
     private Paint mPaintBackgroundProgress;
     private Paint mPaintValue;
-    private Paint mPaintTimeProgress;
+    private Paint mPaintProgress;
     private Paint mPaintHandClock;
     private Paint mPaintHandClockColored;
     private Paint mPaintTopText;
@@ -182,7 +180,8 @@ public class TempView extends View {
                 mColorBackgroundProgress = a.getColor(R.styleable.TempView_tv_color_background_progress, DEFAULT_BACKGROUND_PROGRESS_COLOR);
                 mColorValue = a.getColor(R.styleable.TempView_tv_color_value, DEFAULT_START_TIME_STROKE_COLOR);
                 mColorProgress = a.getColor(R.styleable.TempView_tv_color_progress, DEFAULT_PROGRESS_COLOR);
-                mColorText = a.getColor(R.styleable.TempView_tv_text_color, DEFAULT_TEXT_TIME_COLOR);
+                mColorText = a.getColor(R.styleable.TempView_tv_color_text, DEFAULT_TEXT_COLOR);
+                mColorDegree = a.getColor(R.styleable.TempView_tv_color_degree, DEFAULT_DEGREE_COLOR);
 
                 mStrokeWithCircle = a.getDimension(R.styleable.TempView_tv_stroke_width_circle, DEFAULT_CIRCLE_STROKE_WIDTH);
                 mStrokeWithBackgroundProgress = a.getDimension(R.styleable.TempView_tv_stroke_width_background_progress, DEFAULT_BACKGROUND_PROGRESS_STROKE_WIDTH);
@@ -226,12 +225,12 @@ public class TempView extends View {
             mPaintValue.setColor(mColorValue);
             mPaintValue.setStyle(Paint.Style.FILL_AND_STROKE);
 
-            mPaintTimeProgress = new Paint();
-            mPaintTimeProgress.setAntiAlias(true);
-            mPaintTimeProgress.setStrokeWidth(mPaintBackgroundProgress.getStrokeWidth());
-            mPaintTimeProgress.setColor(mColorProgress);
-            mPaintTimeProgress.setStrokeCap(Paint.Cap.ROUND);
-            mPaintTimeProgress.setStyle(Paint.Style.STROKE);
+            mPaintProgress = new Paint();
+            mPaintProgress.setAntiAlias(true);
+            mPaintProgress.setStrokeWidth(mPaintBackgroundProgress.getStrokeWidth());
+            mPaintProgress.setColor(mColorProgress);
+            mPaintProgress.setStrokeCap(Paint.Cap.ROUND);
+            mPaintProgress.setStyle(Paint.Style.STROKE);
 
 
             mPaintHandClock = new Paint();
@@ -244,7 +243,7 @@ public class TempView extends View {
             mPaintHandClockColored = new Paint();
             mPaintHandClockColored.setAntiAlias(true);
             mPaintHandClockColored.setStrokeWidth(mPaintBackgroundProgress.getStrokeWidth() / 3.6f);
-            mPaintHandClockColored.setColor(DEFAULT_PROGRESS_COLOR);
+            mPaintHandClockColored.setColor(mColorDegree);
             mPaintHandClockColored.setStyle(Paint.Style.STROKE);
             mPaintHandClockColored.setStrokeCap(Paint.Cap.ROUND);
 
@@ -495,7 +494,7 @@ public class TempView extends View {
 
         float sweep = getSweepProgressArc();
         //PROGRESS TIME
-        canvas.drawArc(mRectProgress, START_DEGREE, sweep, false, mPaintTimeProgress);
+        canvas.drawArc(mRectProgress, START_DEGREE, sweep, false, mPaintProgress);
 
 
         //TEXT
