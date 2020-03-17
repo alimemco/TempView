@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">TempViewDemo</string>
+    <string name="app_name">TempView</string>
     <string name="status">status</string>
     <string name="flexible_mode">Flexible Mode</string>
     <string name="indicator_mode">Indicator Mode</string>
