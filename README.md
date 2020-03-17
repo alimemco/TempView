@@ -4,6 +4,10 @@ show temp in smart home app
 
 <br />
 
+download and use sample app [demo.apk](https://github.com/alipapital/TempViewDemo/blob/master/app/tempView%20v1.apk)
+
+<br />
+
 ### Flexible Mode
 ```xml
     <com.alirnp.tempview.TempView
